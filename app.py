@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv 
 import os
 from datetime import datetime
+from flask import render_template
 
 load_dotenv()  
 
@@ -17,6 +18,7 @@ class Videogames(db.Model):
     platform = db.Column(db.String(80), nullable=False)
     rating_board = db.Column(db.String(80), nullable=False)
     category = db.Column(db.String(80), nullable=False)
+    status = db.Column(db.Boolean, default=False) 
     #imagen = db.Column(db.String(200)) 
     
 
@@ -27,7 +29,8 @@ class Videogames(db.Model):
             'developer': self.developer,
             'platform': self.platform,
             'rating_board': self.rating_board,
-            'category': self.category
+            'category': self.category,
+            'status': self.status
             #'imagen': self.imagen
         }
         
@@ -53,7 +56,8 @@ def create_task():
         developer=request.json.get('developer', ''),
         platform=request.json.get('platform', ''),
         rating_board=request.json.get('rating_board', ''),
-        category=request.json.get('category', '')
+        category=request.json.get('category', ''),
+        status=request.json.get('status', '')
     )
     db.session.add(task) 
     db.session.commit()  
@@ -82,6 +86,29 @@ def delete_task(task_id):
     db.session.delete(task)  
     db.session.commit()  
     return jsonify({'status': True}), 201 
+
+#Para filtrar por categoria
+@app.route('/category_filter/<string:category>', methods=['GET'])  
+def filter(category):
+    tasks = Videogames.query.filter(Videogames.category == category).all()
+    if not tasks:
+        abort(404)
+    return jsonify([task.llenar() for task in tasks]), 201
+
+
+#Para ordenar los juegos alfabeticamente
+@app.route('/order_asc', methods=['GET'])  
+def order():
+    tasks = Videogames.query.order_by(Videogames.name).all()
+    if not tasks:
+        abort(404)
+    return jsonify([task.llenar() for task in tasks]), 201
+
+#Para mostrarlo en el html
+@app.route('/show_videogames', methods=['GET'])  
+def show_games():
+    games = Videogames.query.all()
+    return render_template('index.html', games=games)
 
 if __name__ == '__main__':  
     with app.app_context():  
