@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 
-load_dotenv()  # Carga las variables de entorno desde un archivo .env, si está presente.
+load_dotenv()  
 
 app = Flask(__name__)  
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
@@ -16,6 +16,7 @@ class Videogames(db.Model):
     developer = db.Column(db.String(80), nullable=False)
     platform = db.Column(db.String(80), nullable=False)
     rating_board = db.Column(db.String(80), nullable=False)
+    category = db.Column(db.String(80), nullable=False)
     #imagen: URL
     
 
@@ -25,7 +26,8 @@ class Videogames(db.Model):
             'name': self.name,
             'developer': self.developer,
             'platform': self.platform,
-            'rating_board': self.rating_board
+            'rating_board': self.rating_board,
+            'category': self.category
         }
         
 @app.route('/')  
