@@ -57,7 +57,7 @@ def create_task():
         platform=request.json.get('platform', ''),
         rating_board=request.json.get('rating_board', ''),
         category=request.json.get('category', ''),
-        status=request.json.get('status', '')
+        status=request.json.get('status', False)
     )
     db.session.add(task) 
     db.session.commit()  
@@ -87,7 +87,7 @@ def delete_task(task_id):
     db.session.commit()  
     return jsonify({'status': True}), 201 
 
-#Para filtrar por categoria
+#Para filtrar por categoria y si quieres otra solo cambias la columna
 @app.route('/category_filter/<string:category>', methods=['GET'])  
 def filter(category):
     tasks = Videogames.query.filter(Videogames.category == category).all()
