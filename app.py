@@ -17,7 +17,7 @@ class Videogames(db.Model):
     platform = db.Column(db.String(80), nullable=False)
     rating_board = db.Column(db.String(80), nullable=False)
     category = db.Column(db.String(80), nullable=False)
-    #imagen: URL
+    #imagen = db.Column(db.String(200)) 
     
 
     def llenar(self):  
@@ -28,6 +28,7 @@ class Videogames(db.Model):
             'platform': self.platform,
             'rating_board': self.rating_board,
             'category': self.category
+            #'imagen': self.imagen
         }
         
 @app.route('/')  
@@ -47,7 +48,13 @@ def get_tasks():
 def create_task():
     if not request.json or not 'name' in request.json:
         abort(400) 
-    task = Videogames(name=request.json['name'], status=request.json.get('status', False))
+    task = Videogames(
+        name=request.json['name'],
+        developer=request.json.get('developer', ''),
+        platform=request.json.get('platform', ''),
+        rating_board=request.json.get('rating_board', ''),
+        category=request.json.get('category', '')
+    )
     db.session.add(task) 
     db.session.commit()  
     return jsonify(task.llenar()), 201 
@@ -82,3 +89,4 @@ if __name__ == '__main__':
         print("Tables created...")
 
     app.run(debug=True)  
+    
